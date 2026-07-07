@@ -1,0 +1,77 @@
+# ─────────────────────────────────────────────────────────────────────────
+# BizLedger — API Gateway Service Configuration
+# Managed by Config Server (config-server:8888)
+# ─────────────────────────────────────────────────────────────────────────
+
+server:
+    port: 8080
+
+spring:
+    application:
+        name: api-gateway-service
+    cloud:
+        gateway:
+            routes:
+                # ── Public routes (no auth required) ──
+                - id: identity-auth-public
+                  uri: lb://identity-service-java     # lb:// = Eureka load-balanced
+                  predicates:
+                      - Path=/api/v1/auth/register-tenant,/api/v1/auth/login,/api/v1/auth/refresh-token
+
+                # ── Protected routes ──
+                - id: identity-route
+                  uri: lb://identity-service-java
+                  predicates:
+                      - Path=/api/v1/auth/**,/api/v1/users/**,/api/v1/roles/**
+                  filters:
+                      - AuthenticationFilter
+
+                - id: catalog-route
+                  uri: lb://catalog-service-java
+                  predicates:
+                      - Path=/api/v1/products/**,/api/v1/categories/**
+                  filters:
+                      - AuthenticationFilter
+
+                - id: inventory-route
+                  uri: lb://inventory-service-java
+                  predicates:
+                      - Path=/api/v1/inventory/**
+                  filters:
+                      - AuthenticationFilter
+
+                - id: order-route
+                  uri: lb://order-service-java
+                  predicates:
+                      - Path=/api/v1/orders/**
+                  filters:
+                      - AuthenticationFilter
+
+                - id: payment-route
+                  uri: lb://payment-service-java
+                  predicates:
+                      - Path=/api/v1/payments/**,/api/v1/invoices/**
+                  filters:
+                      - AuthenticationFilter
+
+                - id: audit-route
+                  uri: lb://audit-service-java
+                  predicates:
+                      - Path=/api/v1/audit-logs/**
+                  filters:
+                      - AuthenticationFilter
+
+                - id: notification-route
+                  uri: lb://notification-service-dotnet
+                  predicates:
+                      - Path=/api/v1/notifications/**,/hubs/**
+
+                - id: reporting-route
+                  uri: lb://reporting-service-dotnet
+                  predicates:
+                      - Path=/api/v1/reports/**
+                  filters:
+                      - AuthenticationFilter
+
+jwt:
+    secret: c3VwZXItc2VjcmV0LWtleS1tdXN0LWJlLWF0LWxlYXN0LTI1Ni1iaXRzLWxvbmctZm9yLXNlY3VyaXR5

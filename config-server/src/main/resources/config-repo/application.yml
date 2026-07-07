@@ -1,0 +1,37 @@
+# ─────────────────────────────────────────────────────────────────────────
+# BizLedger — Shared Default Configuration
+# Applied to ALL microservices unless overridden in their specific yml.
+# ─────────────────────────────────────────────────────────────────────────
+
+# Eureka client defaults (all services register here)
+eureka:
+    client:
+        service-url:
+            defaultZone: http://localhost:8761/eureka/
+        register-with-eureka: true
+        fetch-registry: true
+    instance:
+        prefer-ip-address: true
+        lease-renewal-interval-in-seconds: 10
+        lease-expiration-duration-in-seconds: 30
+
+# Distributed tracing defaults
+management:
+    tracing:
+        sampling:
+            probability: 1.0   # 100% sampling in dev (reduce to 0.1 in prod)
+    zipkin:
+        tracing:
+            endpoint: http://localhost:9411/api/v2/spans
+    endpoints:
+        web:
+            exposure:
+                include: health,info,metrics,prometheus
+    endpoint:
+        health:
+            show-details: always
+
+# Structured logging defaults
+logging:
+    pattern:
+        console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%-5level] [%X{traceId:-}] [%X{userId:-}] [%X{tenantId:-}] %logger{36} - %msg%n"
