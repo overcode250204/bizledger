@@ -1,3 +1,19 @@
+server:
+    port: 8081
+
 spring:
     application:
-        name: identity-service
+        name: identity-service-java
+    datasource:
+        url: jdbc:postgresql://localhost:5432/identity_db
+        username: bizledger
+        password: bizledger_password
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+
+bizledger:
+    jwt:
+        secret: c3VwZXItc2VjcmV0LWtleS1tdXN0LWJlLWF0LWxlYXN0LTI1Ni1iaXRzLWxvbmctZm9yLXNlY3VyaXR5
+        expiration: 86400000

@@ -15,6 +15,30 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+/**
+ * AuthenticationFilter — per-route GatewayFilter
+ * ───────────────────────────────────────────────
+ * Applied only to protected routes (configured in YAML: "-
+ * AuthenticationFilter").
+ *
+ * Responsibilities:
+ * 1. Validate JWT Bearer token (signature, expiry).
+ * 2. Extract identity claims: userId, tenantId, roles, permissions.
+ * 3. Inject identity context headers downstream so each service does NOT need
+ * to parse JWT.
+ * 4. Forward X-Trace-Id (set by LoggingFilter) to maintain tracing continuity.
+ *
+ * Services downstream should trust these headers because only the gateway can
+ * set them.
+ * Identity headers: X-User-Id, X-Tenant-Id, X-Roles, X-Permissions, X-Trace-Id.
+ *
+ * Interview note:
+ * "We apply a Zero Trust Gateway pattern: each downstream service reads its
+ * user context
+ * from trusted internal headers rather than re-parsing the JWT. This keeps
+ * security logic
+ * centralized in one place and reduces JWT parsing overhead across the fleet."
+ */
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
 

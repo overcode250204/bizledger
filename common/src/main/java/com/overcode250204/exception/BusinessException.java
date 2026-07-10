@@ -1,29 +1,39 @@
 package com.overcode250204.exception;
 
+import org.springframework.http.HttpStatus;
+
 /**
- * BusinessException — Domain-level exception for BizLedger services.
+ * BusinessException — legacy generic exception kept for backward compatibility.
  *
- * Use this when a business rule is violated (not a technical error).
- * The GlobalExceptionHandler in each service maps this to 400/409 responses.
- *
- * Examples:
- * throw new BusinessException("INSUFFICIENT_STOCK", "Not enough stock to
- * reserve");
- * throw new BusinessException("ORDER_NOT_DRAFT", "Only DRAFT orders can be
- * submitted");
- * throw new BusinessException("IDEMPOTENCY_CONFLICT", "Payment already
- * processed");
+ * @deprecated Prefer typed exceptions from each service's exception package.
+ *             Use ResourceNotFoundException, DuplicateResourceException,
+ *             InvalidStateException,
+ *             or ForbiddenOperationException instead with a service-specific
+ *             ErrorCode enum.
  */
+@Deprecated
 public class BusinessException extends RuntimeException {
 
     private final String code;
+    private final HttpStatus httpStatus;
 
     public BusinessException(String code, String message) {
         super(message);
         this.code = code;
+        this.httpStatus = HttpStatus.BAD_REQUEST;
+    }
+
+    public BusinessException(String code, String message, HttpStatus httpStatus) {
+        super(message);
+        this.code = code;
+        this.httpStatus = httpStatus;
     }
 
     public String code() {
         return code;
+    }
+
+    public HttpStatus httpStatus() {
+        return httpStatus;
     }
 }
