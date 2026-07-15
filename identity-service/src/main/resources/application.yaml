@@ -1,19 +1,22 @@
 server:
     port: 8081
-
 spring:
+    config:
+        import: optional:configserver:http://localhost:8888
     application:
-        name: identity-service-java
-    datasource:
-        url: jdbc:postgresql://localhost:5432/identity_db
-        username: bizledger
-        password: bizledger_password
-    jpa:
-        hibernate:
-            ddl-auto: update
-        show-sql: true
-
+        name: identity-service
+    flyway:
+        enabled: true
+        locations: classpath:migration
 bizledger:
     jwt:
         secret: c3VwZXItc2VjcmV0LWtleS1tdXN0LWJlLWF0LWxlYXN0LTI1Ni1iaXRzLWxvbmctZm9yLXNlY3VyaXR5
         expiration: 86400000
+debug: true
+
+swagger:
+    title: "Identity Service"
+    version: "1.0"
+    description: "Identity Endpoints"
+    package: identityservice
+    gateway-url: http://localhost:8080

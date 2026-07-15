@@ -26,10 +26,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 
+        String path = request.getRequestURI();
+
+        if (path.endsWith("/login")
+                || isPublicPath(path)
+        ) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if (authorization == null || !authorization.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
+
+
 
         String token = authorization.substring("Bearer ".length());
 
@@ -55,5 +66,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+    private boolean isPublicPath(String path) {
+        return path.startsWith("/swagger-ui")
+                || path.contains("/v3/api-docs")
+                || path.startsWith("/swagger-resources")
+                || path.startsWith("/webjars") || path.startsWith("/api/v1/auth");
     }
 }

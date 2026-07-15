@@ -3,62 +3,23 @@ server:
 
 spring:
     application:
-        name: audit-service-java
+        name: audit-service
     config:
-        import: "optional:configserver:http://localhost:8888"
+        import: optional:configserver:http://localhost:8888
     cloud:
         config:
             fail-fast: false
-    datasource:
-        url: jdbc:postgresql://localhost:5432/audit_db
-        username: bizledger
-        password: bizledger_password
-        hikari:
-            connection-timeout: 30000
-            maximum-pool-size: 10
-            pool-name: AuditHikariPool
-    jpa:
-        hibernate:
-            ddl-auto: validate
-        show-sql: false
-    flyway:
-        enabled: true
-        baseline-on-migrate: true
-    kafka:
-        bootstrap-servers: localhost:9092
-        consumer:
-            group-id: audit-group
-            auto-offset-reset: earliest
-            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-            value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-        producer:
-            key-serializer: org.apache.kafka.common.serialization.StringSerializer
-            value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
-    # Elasticsearch — dual-write store for fast audit log search
-    elasticsearch:
-        uris: http://localhost:9200
-        connection-timeout: 5s
-        socket-timeout: 30s
 
-eureka:
-    client:
-        service-url:
-            defaultZone: http://localhost:8761/eureka/
-        register-with-eureka: true
-        fetch-registry: true
-    instance:
-        prefer-ip-address: true
-        lease-renewal-interval-in-seconds: 10
 
-management:
-    tracing:
-        sampling:
-            probability: 1.0
-    endpoints:
-        web:
-            exposure:
-                include: health,info,metrics
-    endpoint:
-        health:
-            show-details: always
+
+
+
+
+swagger:
+    title: "Audit Service"
+    version: "1.0"
+    description: "Audit Endpoints"
+    package: auditservice
+    gateway-url: http://localhost:8080
+

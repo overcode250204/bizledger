@@ -1,4 +1,4 @@
-package com.overcode250204.identityservicejava.entity;
+package com.overcode250204.identityservice.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

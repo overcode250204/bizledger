@@ -1,3 +1,11 @@
 spring:
     application:
         name: payment-service
+
+
+swagger:
+    title: "Payment Service"
+    version: "1.0"
+    description: "Payment Endpoints"
+    package: paymentservice
+    gateway-url: http://localhost:8080

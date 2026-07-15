@@ -1,3 +1,11 @@
 spring:
     application:
         name: order-service
+
+
+swagger:
+    title: "Order Service"
+    version: "1.0"
+    description: "Order Endpoints"
+    package: orderservice
+    gateway-url: http://localhost:8080

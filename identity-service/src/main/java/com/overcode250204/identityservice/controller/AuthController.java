@@ -3,13 +3,11 @@ package com.overcode250204.identityservice.controller;
 import com.overcode250204.common.web.ApiResponse;
 import com.overcode250204.identityservice.dto.auth.AuthResponse;
 import com.overcode250204.identityservice.dto.auth.LoginRequest;
+import com.overcode250204.identityservice.dto.auth.RegisterTenantRequest;
 import com.overcode250204.identityservice.service.IAuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -22,5 +20,11 @@ public class AuthController {
         return ApiResponse.success(authService.login(request));
     }
 
+    @PostMapping("/register-tenant")
+    public ApiResponse<AuthResponse> registerTenant(
+            @Valid @RequestBody RegisterTenantRequest request
+    ) {
+        return ApiResponse.success(authService.registerTenant(request));
+    }
 
 }

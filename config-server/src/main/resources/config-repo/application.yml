@@ -26,12 +26,29 @@ management:
     endpoints:
         web:
             exposure:
-                include: health,info,metrics,prometheus
+                include: health,info,metrics,bus-refresh,bus-refresh,prometheus
     endpoint:
         health:
             show-details: always
+
+# Spring Cloud Bus Configuration
+spring:
+    cloud:
+        bus:
+            enabled: true
+            destination: springCloudBus
+            id: ${spring.application.name}:${server.port}
+        stream:
+            kafka:
+                binder:
+                    brokers: localhost:29092
+                    producer-properties:
+                        key.serializer: org.apache.kafka.common.serialization.StringSerializer
+                        value.serializer: org.apache.kafka.common.serialization.ByteArraySerializer
 
 # Structured logging defaults
 logging:
     pattern:
         console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%-5level] [%X{traceId:-}] [%X{userId:-}] [%X{tenantId:-}] %logger{36} - %msg%n"
+springdoc:
+    show-actuator: true

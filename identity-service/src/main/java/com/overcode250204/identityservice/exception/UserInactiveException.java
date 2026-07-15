@@ -1,6 +1,6 @@
 package com.overcode250204.identityservice.exception;
 
-import com.overcode250204.common.exception.ForbiddenOperationException;
+import com.overcode250204.exception.ForbiddenOperationException;
 
 /** Thrown when an inactive or locked user attempts to authenticate. */
 public class UserInactiveException extends ForbiddenOperationException {

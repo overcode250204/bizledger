@@ -1,4 +1,4 @@
-package com.overcode250204.identityservicejava.entity;
+package com.overcode250204.identityservice.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,7 +29,7 @@ public class OutboxEvent {
     @Column(nullable = false)
     private String topic;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String payload;
 
     @Column(nullable = false)

@@ -25,6 +25,15 @@ public class InternalGatewayAuthenticationFilter extends OncePerRequestFilter {
         String rolesStr = request.getHeader("X-Roles");
         String permsStr = request.getHeader("X-Permissions");
 
+        String path = request.getRequestURI();
+
+        if (isPublicPath(path)
+        ) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+
         if (userId != null && !userId.isBlank()) {
             List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
@@ -56,5 +65,12 @@ public class InternalGatewayAuthenticationFilter extends OncePerRequestFilter {
     }
 
     public record InternalUser(String userId, String tenantId, String roles, String permissions) {
+    }
+
+    private boolean isPublicPath(String path) {
+        return path.startsWith("/swagger-ui")
+                || path.contains("/v3/api-docs")
+                || path.startsWith("/swagger-resources")
+                || path.startsWith("/webjars") || path.startsWith("/api/v1/auth") || path.startsWith("/actuator");
     }
 }

@@ -10,7 +10,7 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "user")
+@Table(name = "\"user\"")
 @Getter
 @Setter
 @Builder
@@ -37,4 +37,29 @@ public class User {
 
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
+
+    @Column(name = "mfa_secret")
+    private String mfaSecret;
+
+    @Column(name = "mfa_enabled", nullable = false)
+    @Builder.Default
+    private boolean mfaEnabled = false;
+
+    @Column(name = "sso_provider")
+    private String ssoProvider;
+
+    @Column(name = "sso_subject")
+    private String ssoSubject;
+
+    public User(UUID id, UUID tenantId, String email, String passwordHash, String fullName, boolean active,
+                OffsetDateTime createdAt) {
+        this.id = id;
+        this.tenantId = tenantId;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.fullName = fullName;
+        this.active = active;
+        this.createdAt = createdAt;
+        this.mfaEnabled = false;
+    }
 }

@@ -57,11 +57,13 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     @Override
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
+
             ServerHttpRequest request = exchange.getRequest();
             String traceId = request.getHeaders().getFirst(LoggingFilter.TRACE_ID_HEADER);
 
+
             // ── 1. Require Authorization header ──────────────────────────────
-            if (!request.getHeaders().containsHeader(HttpHeaders.AUTHORIZATION)) {
+            if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
                 log.warn("Missing Authorization header | traceId={} path={}",
                         traceId, request.getPath().value());
                 return onError(exchange, HttpStatus.UNAUTHORIZED);

@@ -1,4 +1,4 @@
-package com.overcode250204.identityservice.config.security;
+package com.overcode250204.identityservice.aspect;
 
 import com.overcode250204.identityservice.annotation.CurrentUser;
 import com.overcode250204.identityservice.entity.AuthenticatedUser;

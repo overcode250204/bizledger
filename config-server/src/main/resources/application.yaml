@@ -11,15 +11,24 @@ spring:
             server:
                 native:
                     search-locations: classpath:/config-repo  # Config files stored in resources/config-repo/
-
+        bus:
+            enabled: true
+            destination: springCloudBus
+        stream:
+            kafka:
+                binder:
+                    brokers: localhost:29092
+    Kafka:
+        bootstrap-servers: localhost:29092
 management:
     endpoints:
         web:
             exposure:
-                include: health,info,env
+                include: health,info,env,bus-refresh,bus-refresh,prometheus
     endpoint:
         health:
             show-details: always
+
 
 logging:
     level:

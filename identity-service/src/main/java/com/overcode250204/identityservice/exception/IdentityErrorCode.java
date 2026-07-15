@@ -1,6 +1,6 @@
 package com.overcode250204.identityservice.exception;
 
-import com.overcode250204.common.exception.ErrorCode;
+import com.overcode250204.exception.ErrorCode;
 import org.springframework.http.HttpStatus;
 
 /**

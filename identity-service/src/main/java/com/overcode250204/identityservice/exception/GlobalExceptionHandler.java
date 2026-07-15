@@ -1,7 +1,7 @@
 package com.overcode250204.identityservice.exception;
 
 
-import com.overcode250204.common.web.ApiError;
+import com.overcode250204.web.ApiError;
 import com.overcode250204.common.web.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
