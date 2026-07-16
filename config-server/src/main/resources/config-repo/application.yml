@@ -6,6 +6,8 @@
 # Eureka client defaults (all services register here)
 eureka:
     client:
+        refresh:
+            enable: false
         service-url:
             defaultZone: http://localhost:8761/eureka/
         register-with-eureka: true
@@ -14,7 +16,7 @@ eureka:
         prefer-ip-address: true
         lease-renewal-interval-in-seconds: 10
         lease-expiration-duration-in-seconds: 30
-
+#        instance-id: ${spring.application.name}:${spring.application.instance_id:${server.port}}
 # Distributed tracing defaults
 management:
     tracing:

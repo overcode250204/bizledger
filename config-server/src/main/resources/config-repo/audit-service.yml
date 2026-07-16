@@ -31,6 +31,8 @@ spring:
 
     # Elasticsearch — dual-write store for fast audit log search
     elasticsearch:
-        Uris: http://localhost:9200
+        uris: http://localhost:9200
+        username: elastic
+        password: bizledger_password
         connection-timeout: 5s
         socket-timeout: 30s

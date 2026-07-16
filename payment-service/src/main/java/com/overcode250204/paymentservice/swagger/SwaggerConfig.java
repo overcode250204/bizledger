@@ -1,6 +1,6 @@
 package com.overcode250204.paymentservice.swagger;
 
-import com.overcode250204.config.AbstractSwaggerConfig;
+import com.overcode250204.common.config.AbstractSwaggerConfig;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Value;

@@ -3,7 +3,7 @@ package com.overcode250204.identityservice.exception;
 
 
 
-import com.overcode250204.exception.ResourceNotFoundException;
+import com.overcode250204.common.exception.ResourceNotFoundException;
 
 import java.util.UUID;
 

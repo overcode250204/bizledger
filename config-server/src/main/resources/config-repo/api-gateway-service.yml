@@ -69,7 +69,7 @@ spring:
 
                 # ── Public routes (no auth required) ──
                 - id: identity-auth-public
-                  uri: lb://identity-service     # lb:// = Eureka load-balanced
+                  uri: lb://identity-service
                   predicates:
                       - Path=/identity-service/api/v1/auth/register-tenant,/identity-service/api/v1/auth/login,/identity-service/api/v1/auth/refresh-token,/identity-service/api/v1/auth/sso/login
                   filters:
@@ -87,50 +87,94 @@ spring:
                 - id: catalog-route
                   uri: lb://catalog-service
                   predicates:
-                      - Path=/api/v1/products/**,/api/v1/categories/**
+                      - Path=/catalog-service/api/v1/products/**,/catalog-service/api/v1/categories/**
                   filters:
+                      - StripPrefix=1
                       - AuthenticationFilter
 
                 - id: inventory-route
                   uri: lb://inventory-service
                   predicates:
-                      - Path=/api/v1/inventory/**
+                      - Path=/inventory-service/api/v1/inventory/**
                   filters:
+                      - StripPrefix=1
                       - AuthenticationFilter
 
                 - id: order-route
                   uri: lb://order-service
                   predicates:
-                      - Path=/api/v1/orders/**
+                      - Path=/order-service/api/v1/orders/**
                   filters:
+                      - StripPrefix=1
                       - AuthenticationFilter
 
                 - id: payment-route
                   uri: lb://payment-service
                   predicates:
-                      - Path=/api/v1/payments/**,/api/v1/invoices/**
+                      - Path=/payment-service/api/v1/payments/**,/payment-service/api/v1/invoices/**
                   filters:
+                      - StripPrefix=1
                       - AuthenticationFilter
 
                 - id: audit-route
                   uri: lb://audit-service
                   predicates:
-                      - Path=/api/v1/audit-logs/**
+                      - Path=/audit-service/api/v1/audit-logs/**
                   filters:
+                      - StripPrefix=1
                       - AuthenticationFilter
 
                 - id: notification-route
-                  uri: lb://notification-service-dotnet
+                  uri: lb://notification-service
                   predicates:
-                      - Path=/api/v1/notifications/**,/hubs/**
+                      - Path=/notification-service/api/v1/notifications/**,/notification-service/hubs/**
+                  filters:
+                      - StripPrefix=1
 
                 - id: reporting-route
-                  uri: lb://reporting-service-dotnet
+                  uri: lb://reporting-service
                   predicates:
-                      - Path=/api/v1/reports/**
+                      - Path=/reporting-service/api/v1/reports/**
                   filters:
+                      - StripPrefix=1
                       - AuthenticationFilter
-                 #    ACTUATOR_ROUTE
+
+                # ── ACTUATOR ROUTES ──
+                - id: identity-actuator-route
+                  uri: lb://identity-service
+                  predicates:
+                      - Path=/identity-service/actuator/**
+                  filters:
+                      - StripPrefix=1
+
+                - id: catalog-actuator-route
+                  uri: lb://catalog-service
+                  predicates:
+                      - Path=/catalog-service/actuator/**
+                  filters:
+                      - StripPrefix=1
+
+                - id: inventory-actuator-route
+                  uri: lb://inventory-service
+                  predicates:
+                      - Path=/inventory-service/actuator/**
+                  filters:
+                      - StripPrefix=1
+
+                - id: order-actuator-route
+                  uri: lb://order-service
+                  predicates:
+                      - Path=/order-service/actuator/**
+                  filters:
+                      - StripPrefix=1
+
+                - id: payment-actuator-route
+                  uri: lb://payment-service
+                  predicates:
+                      - Path=/payment-service/actuator/**
+                  filters:
+                      - StripPrefix=1
+
                 - id: audit-actuator-route
                   uri: lb://audit-service
                   predicates:
@@ -138,11 +182,19 @@ spring:
                   filters:
                       - StripPrefix=1
 
+                - id: notification-actuator-route
+                  uri: lb://notification-service
+                  predicates:
+                      - Path=/notification-service/actuator/**
+                  filters:
+                      - StripPrefix=1
 
-
-
-
-
+                - id: reporting-actuator-route
+                  uri: lb://reporting-service
+                  predicates:
+                      - Path=/reporting-service/actuator/**
+                  filters:
+                      - StripPrefix=1
 
 jwt:
     secret: c3VwZXItc2VjcmV0LWtleS1tdXN0LWJlLWF0LWxlYXN0LTI1Ni1iaXRzLWxvbmctZm9yLXNlY3VyaXR5
@@ -156,8 +208,6 @@ springdoc:
         path: /swagger-ui.html
         urls:
             - name: API Gateway (Actuator)
-              url: /v3/api-docs/actuator
-            - name: API Gateway (Default)
               url: /v3/api-docs
             - name: Identity Service
               url: /identity-service/v3/api-docs

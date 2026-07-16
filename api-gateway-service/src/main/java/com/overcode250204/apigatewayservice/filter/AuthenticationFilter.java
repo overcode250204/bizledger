@@ -62,6 +62,10 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
             String traceId = request.getHeaders().getFirst(LoggingFilter.TRACE_ID_HEADER);
 
 
+            if ("OPTIONS".equals(exchange.getRequest().getMethod().name())) {
+                return chain.filter(exchange);
+            }
+
             // ── 1. Require Authorization header ──────────────────────────────
             if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
                 log.warn("Missing Authorization header | traceId={} path={}",

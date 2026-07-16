@@ -6,8 +6,13 @@ spring:
     application:
         name: identity-service
     flyway:
+        baseline-on-migrate: true
         enabled: true
         locations: classpath:migration
+    cloud:
+        config:
+            fail-fast: true
+
 bizledger:
     jwt:
         secret: c3VwZXItc2VjcmV0LWtleS1tdXN0LWJlLWF0LWxlYXN0LTI1Ni1iaXRzLWxvbmctZm9yLXNlY3VyaXR5

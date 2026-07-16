@@ -203,7 +203,8 @@ services:
         restart: unless-stopped
         environment:
             - discovery.type=single-node
-            - xpack.security.enabled=false
+            - xpack.security.enabled=true
+            - ELASTIC_PASSWORD=bizledger_password
             - xpack.security.http.ssl.enabled=false
             - ES_JAVA_OPTS=-Xms512m -Xmx512m
         ports:
@@ -214,7 +215,7 @@ services:
         networks:
             - bizledger-net
         healthcheck:
-            test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
+            test: ["CMD-SHELL", "curl -u elastic:bizledger_password -sf http://localhost:9200/_cluster/health || exit 1"]
             interval: 20s
             timeout: 10s
             retries: 10
@@ -225,6 +226,8 @@ services:
         restart: unless-stopped
         environment:
             - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+            - ELASTICSEARCH_USERNAME=elastic
+            - ELASTICSEARCH_PASSWORD=bizledger_password
         ports:
             - "5601:5601"
         depends_on:

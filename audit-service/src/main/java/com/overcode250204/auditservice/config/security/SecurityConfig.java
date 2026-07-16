@@ -1,7 +1,7 @@
 package com.overcode250204.auditservice.config.security;
 
 
-import com.overcode250204.security.InternalGatewayAuthenticationFilter;
+import com.overcode250204.common.security.InternalGatewayAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

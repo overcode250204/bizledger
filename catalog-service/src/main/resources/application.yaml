@@ -1,8 +1,17 @@
+server:
+    port: 8082
 spring:
     application:
         name: catalog-service
-
-
+    config:
+        import: optional:configserver:http://localhost:8888
+    flyway:
+        baseline-on-migrate: true
+        enabled: true
+        locations: classpath:migration
+    cloud:
+        config:
+            fail-fast: true
 swagger:
     title: "Catalog Service"
     version: "1.0"

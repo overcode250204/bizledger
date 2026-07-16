@@ -1,9 +1,11 @@
 package com.overcode250204.identityservice.service.impl;
 
+import com.overcode250204.identityservice.outbox.OutboxEvent;
 import com.overcode250204.identityservice.dto.auth.AuthResponse;
 import com.overcode250204.identityservice.dto.auth.SsoLoginRequest;
 import com.overcode250204.identityservice.entity.*;
 import com.overcode250204.identityservice.exception.UserInactiveException;
+import com.overcode250204.identityservice.outbox.OutboxEventRepository;
 import com.overcode250204.identityservice.repository.*;
 import com.overcode250204.identityservice.service.ISsoMfaComplianceService;
 import com.overcode250204.identityservice.util.OidcTokenValidator;
