@@ -12,7 +12,7 @@ bizledger:
     jwt:
         secret: c3VwZXItc2VjcmV0LWtleS1tdXN0LWJlLWF0LWxlYXN0LTI1Ni1iaXRzLWxvbmctZm9yLXNlY3VyaXR5
         expiration: 86400000
-debug: true
+#debug: true
 
 swagger:
     title: "Identity Service"

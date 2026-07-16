@@ -2,12 +2,13 @@ package com.overcode250204.identityservice.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.overcode250204.identityservice.entity.EventEnvelope;
+import com.overcode250204.event.EventEnvelope;
 import com.overcode250204.identityservice.entity.OutboxEvent;
 import com.overcode250204.identityservice.repository.OutboxEventRepository;
 import com.overcode250204.identityservice.service.IOutboxService;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -21,7 +22,8 @@ public class OutboxService implements IOutboxService {
     private final OutboxEventRepository outboxEventRepository;
     private final ObjectMapper objectMapper;
 
-
+    @Value("${spring.application.name}")
+    private String applicationName;
 
 
 
@@ -34,7 +36,7 @@ public class OutboxService implements IOutboxService {
                 eventType,
                 1,
                 OffsetDateTime.now(),
-                "identity-service-java",
+                applicationName,
                 traceId,
                 tenantId.toString(),
                 data);

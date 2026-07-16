@@ -51,4 +51,36 @@ public record EventEnvelope(
                 tenantId,
                 data);
     }
+
+    /**
+     * Extracts value from the data map as a String, or null if key does not exist
+     */
+    public String getString(String key) {
+        if (data == null) {
+            return null;
+        }
+        Object value = data.get(key);
+        return value != null ? value.toString() : null;
+    }
+
+    /**
+     * Extracts value from the data map as a UUID, or null if key is missing or not
+     * a valid UUID string
+     */
+    public UUID getUuid(String key) {
+        String val = getString(key);
+        if (val == null) {
+            return null;
+        }
+        try {
+            return UUID.fromString(val);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    /** Checks if the data map contains the specified key */
+    public boolean has(String key) {
+        return data != null && data.containsKey(key);
+    }
 }
