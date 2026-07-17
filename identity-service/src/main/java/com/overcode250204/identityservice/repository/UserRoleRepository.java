@@ -17,7 +17,7 @@ public interface UserRoleRepository extends JpaRepository<UserRole, UserRoleId> 
     /** Assigns a role to a user (idempotent). */
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO user_roles(user_id, role_id) VALUES (:userId, :roleId) ON CONFLICT DO NOTHING", nativeQuery = true)
+    @Query(value = "INSERT INTO user_role(user_id, role_id) VALUES (:userId, :roleId) ON CONFLICT DO NOTHING", nativeQuery = true)
     void assignRoleToUser(@Param("userId") UUID userId, @Param("roleId") UUID roleId);
 
     /** Assigns a permission to a role (idempotent). */

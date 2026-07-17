@@ -1,12 +1,12 @@
 spring:
     datasource:
-        url: jdbc:postgresql://localhost:5432/catalog_db
+        url: jdbc:postgresql://localhost:5432/inventory_db
         username: bizledger
         password: bizledger_password
         hikari:
             connection-timeout: 30000
             maximum-pool-size: 10
-            pool-name: CatalogHikariPool
+            pool-name: InventoryHikariPool
     jpa:
         hibernate:
             ddl-auto: update
@@ -21,16 +21,16 @@ spring:
         database-platform: org.hibernate.dialect.PostgreSQLDialect
     flyway:
         enabled: true
+        locations: classpath:migration/inventory
         baseline-on-migrate: true
-        locations: classpath:migration/catalog
+
     kafka:
-        bootstrap-servers: localhost:29092
+        bootstrap-servers: localhost:9092
+        consumer:
+            group-id: inventory-group
+            auto-offset-reset: earliest
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
         producer:
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
             value-serializer: org.apache.kafka.common.serialization.StringSerializer
-    elasticsearch:
-        uris: http://localhost:9200
-        username: elastic
-        password: bizledger_password
-        connection-timeout: 5s
-        socket-timeout: 30s
