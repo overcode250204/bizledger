@@ -3,7 +3,7 @@
 -- V1__init_identity.sql
 -- =============================================================
 
-CREATE TABLE tenants (
+CREATE TABLE tenant (
                          id          UUID PRIMARY KEY,
                          name        VARCHAR(255) NOT NULL,
                          code        VARCHAR(100) NOT NULL UNIQUE,
@@ -11,36 +11,50 @@ CREATE TABLE tenants (
                          created_at  TIMESTAMPTZ NOT NULL
 );
 
-CREATE INDEX idx_tenants_code ON tenants(code);
+CREATE INDEX idx_tenant_code ON tenant(code);
 
 -- =============================================================
 
-CREATE TABLE users (
+CREATE TABLE "user" (
                        id             UUID PRIMARY KEY,
-                       tenant_id      UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+                       tenant_id      UUID NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
                        email          VARCHAR(255) NOT NULL UNIQUE,
                        password_hash  VARCHAR(255) NOT NULL,
                        full_name      VARCHAR(255) NOT NULL,
                        active         BOOLEAN NOT NULL DEFAULT TRUE,
-                       created_at     TIMESTAMPTZ NOT NULL
+                       created_at     TIMESTAMPTZ NOT NULL,
+                       mfa_enabled    BOOLEAN NOT NULL DEFAULT FALSE,
+                       mfa_secret     VARCHAR(255),
+                       sso_provider   VARCHAR(255),
+                       sso_subject    VARCHAR(255)
 );
 
-CREATE INDEX idx_users_tenant ON users(tenant_id);
+CREATE INDEX idx_user_tenant ON "user"(tenant_id);
 
 -- =============================================================
 
-CREATE TABLE roles (
+CREATE TABLE cdc_subscriptions (
+                                    id               UUID PRIMARY KEY,
+                                    endpoint         VARCHAR(255) NOT NULL,
+                                    monitored_tables VARCHAR(255) NOT NULL,
+                                    status           VARCHAR(50) NOT NULL,
+                                    last_sync_at     TIMESTAMPTZ
+);
+
+-- =============================================================
+
+CREATE TABLE role (
                        id         UUID PRIMARY KEY,
-                       tenant_id  UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+                       tenant_id  UUID NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
                        code       VARCHAR(100) NOT NULL,
                        name       VARCHAR(255) NOT NULL
 );
 
-CREATE INDEX idx_roles_tenant_code ON roles(tenant_id, code);
+CREATE INDEX idx_role_tenant_code ON role(tenant_id, code);
 
 -- =============================================================
 
-CREATE TABLE permissions (
+CREATE TABLE permission (
                              id           UUID PRIMARY KEY,
                              code         VARCHAR(100) NOT NULL UNIQUE,
                              description  VARCHAR(255) NOT NULL
@@ -48,24 +62,24 @@ CREATE TABLE permissions (
 
 -- =============================================================
 
-CREATE TABLE user_roles (
-                            user_id  UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-                            role_id  UUID NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+CREATE TABLE user_role (
+                            user_id  UUID NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+                            role_id  UUID NOT NULL REFERENCES role(id) ON DELETE CASCADE,
                             PRIMARY KEY (user_id, role_id)
 );
 
 -- =============================================================
 
-CREATE TABLE role_permissions (
-                                  role_id        UUID NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
-                                  permission_id  UUID NOT NULL REFERENCES permissions(id) ON DELETE CASCADE,
+CREATE TABLE role_permission (
+                                  role_id        UUID NOT NULL REFERENCES role(id) ON DELETE CASCADE,
+                                  permission_id  UUID NOT NULL REFERENCES permission(id) ON DELETE CASCADE,
                                   PRIMARY KEY (role_id, permission_id)
 );
 
 -- =============================================================
 -- Outbox Pattern
 -- =============================================================
-CREATE TABLE outbox_events (
+CREATE TABLE outbox_event (
                                id           UUID PRIMARY KEY,
                                event_id     VARCHAR(100) NOT NULL UNIQUE,
                                event_type   VARCHAR(100) NOT NULL,
@@ -77,15 +91,15 @@ CREATE TABLE outbox_events (
                                published_at TIMESTAMPTZ
 );
 
-CREATE INDEX idx_identity_outbox ON outbox_events(status, created_at);
+CREATE INDEX idx_identity_outbox ON outbox_event(status, created_at);
 
 -- =============================================================
 -- API Keys (M2M authentication support - FR-EXT-02)
 -- =============================================================
-CREATE TABLE api_keys (
+CREATE TABLE api_key (
                           id            UUID PRIMARY KEY,
-                          tenant_id     UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-                          user_id       UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                          tenant_id     UUID NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
+                          user_id       UUID NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
                           name          VARCHAR(255) NOT NULL,
                           key_hash      VARCHAR(255) NOT NULL UNIQUE,
                           scopes        VARCHAR(500) NOT NULL,
@@ -94,15 +108,15 @@ CREATE TABLE api_keys (
                           last_used_at  TIMESTAMPTZ
 );
 
-CREATE INDEX idx_api_keys_hash ON api_keys(key_hash);
-CREATE INDEX idx_api_keys_tenant ON api_keys(tenant_id);
+CREATE INDEX idx_api_key_hash ON api_key(key_hash);
+CREATE INDEX idx_api_key_tenant ON api_key(tenant_id);
 
 -- =============================================================
 -- Feature Flags (Tenant Rollouts & Kill switches - FR-EXT-04)
 -- =============================================================
-CREATE TABLE feature_flags (
+CREATE TABLE feature_flag (
                                id           UUID PRIMARY KEY,
-                               tenant_id    UUID REFERENCES tenants(id) ON DELETE CASCADE, -- Null means Global
+                               tenant_id    UUID REFERENCES tenant(id) ON DELETE CASCADE, -- Null means Global
                                key          VARCHAR(255) NOT NULL,
                                description  TEXT,
                                enabled      BOOLEAN NOT NULL DEFAULT TRUE,
@@ -112,4 +126,5 @@ CREATE TABLE feature_flags (
                                UNIQUE(tenant_id, key)
 );
 
-CREATE INDEX idx_feature_flags_tenant ON feature_flags(tenant_id);
+CREATE INDEX idx_feature_flag_tenant ON feature_flag(tenant_id);
+
