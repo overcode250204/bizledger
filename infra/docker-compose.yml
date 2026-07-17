@@ -20,6 +20,19 @@ services:
             retries: 10
         networks:
             - bizledger-net
+    mongodb:
+        image: mongo:6.0
+        container_name: bizledger-mongodb
+        restart: unless-stopped
+        ports:
+            - "27017:27017"
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+            MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+        volumes:
+            - bizledger_mongodb_data:/data/db
+        networks:
+            - bizledger-net
 
     redis:
         image: redis:7.2-alpine
@@ -128,33 +141,7 @@ services:
         networks:
             - bizledger-net
 
-    config-server:
-        build:
-            context: ../serivces/config-server
-            dockerfile: Dockerfile
-        container_name: bizledger-config-server
-        ports:
-            - "8888:8888"
-        depends_on:
-            service-registry:
-                condition: service_healthy
-        networks:
-            - bizledger-net
 
-    service-registry:
-        build:
-            context: ../serivces/service-registry
-            dockerfile: Dockerfile
-        container_name: bizledger-service-registry
-        ports:
-            - "8761:8761"
-        networks:
-            - bizledger-net
-        healthcheck:
-            test: ["CMD-SHELL", "wget -q --spider http://localhost:8761/actuator/health || exit 1"]
-            interval: 10s
-            timeout: 5s
-            retries: 5
 
     zipkin:
         image: openzipkin/zipkin:3
@@ -236,6 +223,32 @@ services:
         networks:
             - bizledger-net
 
+#    config-server:
+#        build:
+#            context: ../serivces/config-server
+#            dockerfile: Dockerfile
+#        container_name: bizledger-config-server
+#        ports:
+#            - "8888:8888"
+#        depends_on:
+#            service-registry:
+#                condition: service_healthy
+#        networks:
+#            - bizledger-net
+#    service-registry:
+#        build:
+#            context: ../serivces/service-registry
+#            dockerfile: Dockerfile
+#        container_name: bizledger-service-registry
+#        ports:
+#            - "8761:8761"
+#        networks:
+#            - bizledger-net
+#        healthcheck:
+#            test: [ "CMD-SHELL", "wget -q --spider http://localhost:8761/actuator/health || exit 1" ]
+#            interval: 10s
+#            timeout: 5s
+#            retries: 5
 #    identity-service:
 #        build:
 #            context: ../serivces/identity-service-java
@@ -313,7 +326,7 @@ services:
 #
 #    inventory-service:
 #        build:
-#            context: ../serivces/inventory-service-java
+#            context: ../serivces/inventory-service
 #            dockerfile: Dockerfile
 #        container_name: bizledger-inventory-service
 #        restart: unless-stopped
@@ -440,6 +453,7 @@ volumes:
     bizledger_prometheus_data:
     bizledger_grafana_data:
     bizledger_es_data:
+    bizledger_mongodb_data:
 
 networks:
     bizledger-net:

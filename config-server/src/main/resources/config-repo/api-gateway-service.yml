@@ -119,7 +119,7 @@ spring:
                 - id: audit-route
                   uri: lb://audit-service
                   predicates:
-                      - Path=/audit-service/api/v1/audit-logs/**
+                      - Path=/audit-service/api/v1/audits/**
                   filters:
                       - StripPrefix=1
                       - AuthenticationFilter

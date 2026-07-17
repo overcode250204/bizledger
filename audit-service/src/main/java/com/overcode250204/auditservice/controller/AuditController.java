@@ -31,7 +31,7 @@ public class AuditController {
      * Use this for compliance reports & ordered timeline views.
      */
     @GetMapping
-    @Operation(summary = "List audit logs (PostgreSQL)", description = "Paginated list ordered by timestamp. Filter by tenantId only.")
+    @Operation(summary = "List audit logs", description = "Paginated list ordered by timestamp. Filter by tenantId only.")
     public ResponseEntity<ApiResponse<Page<AuditEvent>>> getAuditLogs(
             @RequestHeader("X-Tenant-Id") UUID tenantId,
             Pageable pageable) {
