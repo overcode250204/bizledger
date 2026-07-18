@@ -33,15 +33,3 @@ build/
 .vscode/
 
 .env
-
-
-# Visual Studio temporary files
-.vs/
-*.user
-*.userosscache
-*.sln.docstates
-
-# Build outputs
-bin/
-obj/
-target/

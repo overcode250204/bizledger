@@ -16,6 +16,7 @@ import com.overcode250204.catalogservice.exception.SkuAlreadyExistsException;
 import com.overcode250204.common.annotation.AuditLog;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.cache.annotation.Cacheable;
@@ -39,6 +40,9 @@ public class ProductService implements IProductService {
     private final OutboxHelper outboxHelper;
     private final IProductSearchService productSearchService;
     private final ProductPricingTierRepository productPricingTierRepository;
+
+    @Value("${spring.application.name}")
+    private String applicationName;
 
     @Override
     @Transactional(readOnly = true)
@@ -121,7 +125,7 @@ public class ProductService implements IProductService {
     }
 
     private void saveOutboxEvent(UUID tenantId, String eventType, UUID entityId, Map<String, Object> data) {
-        outboxHelper.saveEvent("catalog.events", eventType, "catalog-service-java", tenantId, data);
+        outboxHelper.saveEvent("catalog.events", eventType, applicationName, tenantId, data);
     }
 
     @Override

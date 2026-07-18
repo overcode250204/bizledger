@@ -1,4 +1,4 @@
-package com.overcode250204.orderservice.swagger;
+package com.overcode250204.orderservice.config.swagger;
 
 import com.overcode250204.common.config.AbstractSwaggerConfig;
 import io.swagger.v3.oas.models.OpenAPI;

@@ -1,8 +1,9 @@
 package com.overcode250204.catalogservice.service.impl;
 
 import com.overcode250204.catalogservice.document.ProductDocument;
-import com.overcode250204.catalogservice.entity.Product;
 import com.overcode250204.catalogservice.elasticsearch.ProductSearchRepository;
+import com.overcode250204.catalogservice.entity.Product;
+import com.overcode250204.catalogservice.repository.ProductPricingTierRepository;
 import com.overcode250204.catalogservice.service.IProductSearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,12 +25,27 @@ import java.util.List;
 public class ProductSearchService implements IProductSearchService {
 
     private final ProductSearchRepository searchRepository;
-
     private final ElasticsearchOperations elasticsearchOperations;
+    private final ProductPricingTierRepository pricingTierRepository;
 
     @Override
     public void sync(Product product) {
         try {
+            // Load pricing tiers from DB to embed in the ES document
+            List<ProductDocument.PricingTierDocument> tierDocs = pricingTierRepository
+                    .findByTenantIdAndProductId(product.getTenantId(), product.getId())
+                    .stream()
+                    .map(t -> ProductDocument.PricingTierDocument.builder()
+                            .id(t.getId().toString())
+                            .minQty(t.getMinQuantity())
+                            .unitPrice(t.getUnitPrice())
+                            .label("Qty >= " + t.getMinQuantity())
+                            .build())
+                    .collect(Collectors.toList());
+
+            // Derive status string from active flag (matches FE ProductStatus type)
+            String status = product.isActive() ? "active" : "inactive";
+
             ProductDocument doc = ProductDocument.builder()
                     .id(product.getId().toString())
                     .tenantId(product.getTenantId().toString())
@@ -37,15 +54,18 @@ public class ProductSearchService implements IProductSearchService {
                     .name(product.getName())
                     .description(product.getDescription())
                     .unit(product.getUnit())
-                    .price(product.getPrice())
+                    .basePrice(product.getPrice())
                     .currency(product.getCurrency())
                     .active(product.isActive())
+                    .status(status)
+                    .pricingTiers(tierDocs)
                     .createdAt(product.getCreatedAt())
                     .updatedAt(product.getUpdatedAt())
                     .build();
 
             searchRepository.save(doc);
-            log.debug("[ProductSearch] Synced product id={} name={}", product.getId(), product.getName());
+            log.debug("[ProductSearch] Synced product id={} name={} status={} tiers={}",
+                    product.getId(), product.getName(), status, tierDocs.size());
         } catch (Exception e) {
             log.warn("[ProductSearch] Failed to sync product to Elasticsearch: {}", e.getMessage());
         }
@@ -73,16 +93,16 @@ public class ProductSearchService implements IProductSearchService {
         }
 
         // Exact category filter
-        if (categoryId != null && !categoryId.isBlank()) {
+        if (categoryId != null && !categoryId.isBlank() && !categoryId.equalsIgnoreCase("all"))  {
             criteria = criteria.and(new Criteria("category_id").is(categoryId));
         }
 
         // Price range
         if (minPrice != null) {
-            criteria = criteria.and(new Criteria("price").greaterThanEqual(minPrice.doubleValue()));
+            criteria = criteria.and(new Criteria("base_price").greaterThanEqual(minPrice.doubleValue()));
         }
         if (maxPrice != null) {
-            criteria = criteria.and(new Criteria("price").lessThanEqual(maxPrice.doubleValue()));
+            criteria = criteria.and(new Criteria("base_price").lessThanEqual(maxPrice.doubleValue()));
         }
 
         CriteriaQuery query = new CriteriaQuery(criteria).setPageable(pageable);
