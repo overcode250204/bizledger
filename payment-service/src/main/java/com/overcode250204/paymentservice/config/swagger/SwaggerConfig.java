@@ -1,4 +1,4 @@
-package com.overcode250204.paymentservice.swagger;
+package com.overcode250204.paymentservice.config.swagger;
 
 import com.overcode250204.common.config.AbstractSwaggerConfig;
 import io.swagger.v3.oas.models.OpenAPI;

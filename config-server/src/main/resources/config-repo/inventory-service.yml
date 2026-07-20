@@ -21,7 +21,7 @@ spring:
         database-platform: org.hibernate.dialect.PostgreSQLDialect
     flyway:
         enabled: true
-        locations: classpath:migration/inventory
+        locations: classpath:migration/payment
         baseline-on-migrate: true
 
     kafka:

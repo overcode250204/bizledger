@@ -1,6 +1,14 @@
+server:
+    port: 8085
+
 spring:
     application:
         name: payment-service
+    config:
+        import: "optional:configserver:http://localhost:8888"
+    cloud:
+        config:
+            fail-fast: false
 
 
 swagger:
